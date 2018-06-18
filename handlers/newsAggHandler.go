@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"io/ioutil"
 	"encoding/xml"
-	"NewsApp/model"
+	"../model"
 	"html/template"
 )
 
@@ -32,5 +32,5 @@ func NewsAggHandler(w http.ResponseWriter, r *http.Request) {
 
 	p := model.NewsAggPage{Title: "Washington Post News Aggregator", News: newsMap}
 	t, _ := template.ParseFiles("templates/newsaggtemplate.html")
-	t.Execute(w,p)
+	t.Execute(w, p)
 }
