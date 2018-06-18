@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Utsav.com</title>
+    <link type="text/css" rel="stylesheet" href="//cdn.datatables.net/1.10.18/css/jquery.dataTables.min.css"/>
+</head>
+<body>
+<h1>{{ .Title }}</h1>
+
+<table id="fancytable" class="display">
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Keywords</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {{ range $key, $value := .News }}
+
+    <tr>
+        <td><a href="{{ $value.Location }}" target="_blank">{{ $key }} </a></td>
+        <td> {{ $value.Keyword }}</td>
+    </tr>
+
+    {{ end }}
+    </tbody>
+
+</table>
+
+<script type="text/javascript" charset="utf8"
+        src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#fancytable').DataTable();
+    });
+</script>
+
+</body>
+</html>
