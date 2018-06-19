@@ -6,7 +6,7 @@ type SitemapIndex struct {
 	Locations []string `xml:"sitemap>loc"`
 }
 
-// Links inside the sitemap Struct
+//Treasures found inside of the sitemap Struct links
 type News struct {
 	Titles     []string `xml:"url>news>title"`
 	Keywords  []string `xml:"url>news>keywords"`

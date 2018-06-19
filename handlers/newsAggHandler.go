@@ -6,27 +6,45 @@ import (
 	"encoding/xml"
 	"../model"
 	"html/template"
+	"sync"
 )
+
+var wg sync.WaitGroup
+
+func newsFetchFromLinks(c chan model.News, Location string) {
+	defer wg.Done()
+	var n model.News
+
+	resp, _ := http.Get(Location)
+	bytes, _ := ioutil.ReadAll(resp.Body)
+	xml.Unmarshal(bytes, &n)
+	resp.Body.Close()
+
+	c <- n
+}
 
 func NewsAggHandler(w http.ResponseWriter, r *http.Request) {
 	var s model.SitemapIndex
-	var n model.News
 	newsMap := make(map[string]model.NewsMap)
 
 	resp, _ := http.Get("https://www.washingtonpost.com/news-sitemap-index.xml")
 	bytes, _ := ioutil.ReadAll(resp.Body)
 	// string_body := string(bytes)
 	// fmt.Println(string_body)
-	resp.Body.Close()
 	xml.Unmarshal(bytes, &s)
+	resp.Body.Close()
+	queue := make(chan model.News, 30)
 
-	for _, loc := range s.Locations {
-		resp, _ := http.Get(loc)
-		bytes, _ := ioutil.ReadAll(resp.Body)
-		xml.Unmarshal(bytes, &n)
+	for _, Location := range s.Locations {
+		wg.Add(1)
+		go newsFetchFromLinks(queue, Location)
+	}
+	wg.Wait()
+	close(queue)
 
-		for i, _ := range n.Titles {
-			newsMap[n.Titles[i]] = model.NewsMap{n.Keywords[i], n.Locations[i]}
+	for elem := range queue {
+		for i := range elem.Titles {
+			newsMap[elem.Titles[i]] = model.NewsMap{Keyword: elem.Keywords[i], Location: elem.Locations[i]}
 		}
 	}
 
